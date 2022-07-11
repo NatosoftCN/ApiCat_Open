@@ -2,6 +2,12 @@
 
 namespace App\Modules\Editor;
 
+use App\Modules\HtmlToProseMirror\Renderer;
+use League\CommonMark\MarkdownConverter;
+use League\CommonMark\Environment\Environment;
+use League\CommonMark\Extension\Table\TableExtension;
+use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
+
 /**
  * 编辑器文档内容
  */
@@ -165,6 +171,45 @@ class Content
                 ]
             ]
         ]);
+    }
+
+    /**
+     * 添加描述
+     *
+     * @param string $text 文本内容
+     * @return void
+     */
+    public function addDescription($text)
+    {
+        $config = [
+            'html_input' => 'escape',
+            'allow_unsafe_links' => false,
+            'max_nesting_level' => 5
+        ];
+        $environment = new Environment($config);
+        $environment->addExtension(new CommonMarkCoreExtension());
+        $environment->addExtension(new TableExtension());
+        $converter = new MarkdownConverter($environment);
+
+        try {
+            $content = $converter->convert($text);
+
+            $renderer = new Renderer;
+            $content = $renderer->render($content);
+        } catch (\Exception $e) {
+            $content = [
+                'type'    => 'doc',
+                'content' => [],
+            ];
+        }
+
+        if (!$content or !isset($content['content']) or !$content['content']) {
+            return;
+        }
+
+        foreach ($content['content'] as $v) {
+            $this->addContent($v);
+        }
     }
 
     /**

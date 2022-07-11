@@ -177,7 +177,7 @@ class PostmanRepository extends BaseRepository
     protected function requestProcess($request)
     {
         if (isset($request['description'])) {
-            $this->apicatContentObj->addParagraph($request['description']);
+            $this->apicatContentObj->addDescription($request['description']);
         }
 
         $method = isset($request['method']) ? strtoupper($request['method']) : 'GET';

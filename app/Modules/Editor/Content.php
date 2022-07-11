@@ -136,7 +136,7 @@ class Content
      */
     public function addHeading($text, $level)
     {
-        $this->addContnet([
+        $this->addContent([
             'type' => 'heading',
             'attrs' => ['level' => $level],
             'content' => [
@@ -156,7 +156,7 @@ class Content
      */
     public function addParagraph($text)
     {
-        $this->addContnet([
+        $this->addContent([
             'type' => 'paragraph',
             'content' => [
                 [
@@ -178,7 +178,7 @@ class Content
      */
     public function addHttpApiUrl($url, $path, $method = 1, $bodyDataType = 1)
     {
-        $this->addContnet([
+        $this->addContent([
             'type' => 'http_api_url',
             'attrs' => [
                 'url' => $url,
@@ -202,7 +202,7 @@ class Content
      */
     public function addHttpApiRequestParams($headerTitle, $header, $bodyTitle, $body, $queryTitle, $query)
     {
-        $this->addContnet([
+        $this->addContent([
             'type' => 'http_api_request_parameter',
             'attrs' => [
                 'request_header' => [
@@ -232,7 +232,7 @@ class Content
      */
     public function addHttpApiResponseParams($headerTitle, $header, $bodyTitle, $body)
     {
-        $this->addContnet([
+        $this->addContent([
             'type' => 'http_api_response_parameter',
             'attrs' => [
                 'response_header' => [
@@ -259,7 +259,7 @@ class Content
             return;
         }
 
-        $this->addContnet([
+        $this->addContent([
             'type' => 'http_status_code',
             'attrs' => [
                 'intro' => 'Response Status Code:',
@@ -278,7 +278,7 @@ class Content
      */
     public function addCodeBlock($language, $content)
     {
-        $this->addContnet([
+        $this->addContent([
             'type' => 'code_block',
             'attrs' => [
                 'language' => $language
@@ -298,7 +298,7 @@ class Content
      * @param array $content block内容
      * @return void
      */
-    protected function addContnet($content)
+    protected function addContent($content)
     {
         $this->content['content'][] = $content;
     }

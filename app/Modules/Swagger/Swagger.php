@@ -10,8 +10,6 @@ use Illuminate\Support\Facades\File;
  */
 class Swagger
 {
-    use Parser;
-    
     /**
      * 文档内容
      *
@@ -20,120 +18,87 @@ class Swagger
     public $content;
 
     /**
-     * Swagger version
+     * 解析器对象
      *
-     * @var string
+     * @var Parser
      */
-    public $swagger = '2.0';
+    protected $parser;
 
     /**
-     * API 元数据，用于描述 API 的一些基本信息
+     * 生成器对象
      *
-     * @var array
+     * @var Maker
      */
-    public $info = [
-        // API 文档名称
-        'title' => '',
-        // API 版本
-        'version' => '1.0.0',
-        // API 文档描述
-        'description' => ''
-    ];
+    protected $writer;
 
     /**
-     * API 地址的域名或IP
-     * host 中不能包含 API 的路径Path，可以有端口号
-     * 例: 127.0.0.1:8000 or localhost:8000
+     * __construct
      *
-     * @var string
+     * @param string $content 文档内容
+     * @return void
      */
-    public $host = '';
-
-    /**
-     * 基础路径
-     *
-     * @var string
-     */
-    public $basePath = '/';
-
-    /**
-     * API 传输协议: http, https, ws, wss
-     *
-     * @var array
-     */
-    public $schemes = ['http'];
-
-    /**
-     * API 路径
-     *
-     * @var array
-     */
-    public $paths = [];
-
-    /**
-     * 定义请求和返回的数据类型
-     *
-     * @var array
-     */
-    public $definitions = [];
-
-    /**
-     * 跨 API 使用的参数
-     *
-     * @var array
-     */
-    public $parameters = [];
-
-    /**
-     * 跨 API 使用的返回内容
-     *
-     * @var array
-     */
-    public $responses = [];
-
-    /**
-     * 定义的安全方案
-     *
-     * @var array
-     */
-    public $securityDefinitions = [];
-
-    /**
-     * 整个 API 支持哪些安全方案
-     *
-     * @var array
-     */
-    public $security = [];
-
-    /**
-     * API 的标签分类
-     *
-     * @var array
-     */
-    public $tags = [];
-    
-    /**
-     * 额外的文档描述
-     *
-     * @var array
-     */
-    public $externalDocs = [];
-
-    /**
-     * 读取文档内容
-     *
-     * @param string $filePath 文档路径
-     * @return boolean
-     */
-    public function readFile($filePath)
+    public function __construct($content = null)
     {
-        if (!File::exists($filePath)) {
-            return false;
+        if ($content ) {
+            $this->content = $content;
+            $this->wantParse();
+        } else {
+            $this->wantWrite();
         }
+    }
 
-        if ($this->content = file_get_contents($filePath)) {
-            return true;
-        }
-        return false;
+    /**
+     * 获取根据标签分组的path数组
+     *
+     * @return array
+     */
+    public function getPathGroup()
+    {
+        return $this->parser->getPathGroup();
+    }
+
+    /**
+     * 解析API内容
+     *
+     * @param array $api API相关信息
+     * @return array
+     */
+    public function parse($api)
+    {
+        $result = [
+            'protocol' => $this->parser->getProtocol(),
+            'host' => $this->parser->getHost(),
+            'base_path' => $this->parser->getBasePath(),
+            'path' => $api['path'],
+            'method' => $api['method'],
+            'summary' => isset($api['summary']) ? $api['summary'] : '',
+            'description' => isset($api['description']) ? $api['description'] : '',
+            'produces' => isset($api['produces']) ? $api['produces'] : [],
+            'consumes' => isset($api['consumes']) ? $api['consumes'] : [],
+            // 'request'
+        ];
+    }
+
+    protected function requestParams()
+    {}
+
+    /**
+     * 解析文档内容
+     *
+     * @return void
+     */
+    protected function wantParse()
+    {
+        $this->parser = new Parser($this->content);
+    }
+
+    /**
+     * 生成文档内容
+     *
+     * @return void
+     */
+    protected function wantWrite()
+    {
+        $this->writer = new Maker();
     }
 }
